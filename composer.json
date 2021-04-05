@@ -1,0 +1,22 @@
+{
+    "name": "valschr/statamic-image-renderer",
+    "autoload": {
+        "psr-4": {
+            "Valschr\\ImageRenderer\\": "src"
+        }
+    },
+    "extra": {
+        "statamic": {
+            "name": "Responsive Image Renderer",
+            "description": "Responsive Image Rendering addon"
+        },
+        "laravel": {
+            "providers": [
+                "Valschr\\ImageRenderer\\ServiceProvider"
+            ]
+        }
+    },
+    "require": {
+        "bepsvpt/blurhash": "^1.0"
+    }
+}
