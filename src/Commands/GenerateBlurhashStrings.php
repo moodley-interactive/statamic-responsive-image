@@ -8,6 +8,9 @@ use Illuminate\Console\Command;
 use Statamic\Console\RunsInPlease;
 use Statamic\Facades\Image;
 use Bepsvpt\Blurhash\Facades\BlurHash;
+use League\ColorExtractor\Palette;
+use League\ColorExtractor\ColorExtractor;
+use League\ColorExtractor\Color;
 
 class GenerateBlurhashStrings extends Command
 {
@@ -36,6 +39,13 @@ class GenerateBlurhashStrings extends Command
         parent::__construct();
     }
 
+	protected function getColor($asset)
+    {
+        $palette = Palette::fromFilename($asset->resolvedPath());
+        $extractor = new ColorExtractor($palette, Color::fromHexToInt('#f1f1f1'));
+        return Color::fromIntToHex($extractor->extract(1)[0]);
+    }
+
     /**
      * Execute the console command.
      *
@@ -52,7 +62,9 @@ class GenerateBlurhashStrings extends Command
         $this->getOutput()->progressStart($assets->count());
         $assets->each(function (Asset $asset) {
           $hash = BlurHash::encode($asset->resolvedPath());
+		  $color =$this->getColor($asset);
           $asset->set("blurhash", $hash);
+          $asset->set("dominant_color", $color);
           $asset->writeMeta($meta = $asset->generateMeta());
           $this->getOutput()->progressAdvance();
         });

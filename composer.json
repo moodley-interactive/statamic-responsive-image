@@ -17,6 +17,7 @@
         }
     },
     "require": {
-        "bepsvpt/blurhash": "^1.0"
+        "bepsvpt/blurhash": "^1.0",
+        "league/color-extractor": "^0.3.2"
     }
 }

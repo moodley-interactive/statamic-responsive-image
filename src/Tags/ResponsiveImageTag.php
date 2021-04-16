@@ -2,6 +2,7 @@
 
 namespace Valschr\ImageRenderer\Tags;
 
+use Statamic\Facades\Asset as AssetFacade;
 use Statamic\Tags\Tags;
 
 class ResponsiveImageTag extends Tags
@@ -10,8 +11,16 @@ class ResponsiveImageTag extends Tags
 
   public function index()
   {
-      ray($this->params);
-      return null;
+      $this->src = $this->params["src"];
+	  if (is_string($this->src)) {
+		$asset = AssetFacade::findByUrl($this->src);
+	  } else {
+		$asset = $this->src->value();
+	  }
+	  ray($asset);
+      return view('responsive-images::responsiveImage', [
+		  "blurhash" => $asset->meta()["data"]["blurhash"],
+	  ]);
   }
 
   public function wildcard($tag)
