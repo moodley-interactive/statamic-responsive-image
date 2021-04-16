@@ -1,1 +1,1 @@
-<img data-blurhash="{{ blurhash }}" src="" alt="">
+<img srcset="{{ $srcset }}" loading="lazy" alt="" style="background-color: {{ $dominant_color }};" >
