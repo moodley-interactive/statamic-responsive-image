@@ -1,6 +1,6 @@
 <?php
 
-namespace Valschr\ImageRenderer\Commands;
+namespace Mia\ImageRenderer\Commands;
 
 use Statamic\Contracts\Assets\Asset;
 use Statamic\Contracts\Assets\AssetRepository;
