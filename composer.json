@@ -1,8 +1,8 @@
 {
-    "name": "valschr/statamic-image-renderer",
+    "name": "mia/statamic-image-renderer",
     "autoload": {
         "psr-4": {
-            "Valschr\\ImageRenderer\\": "src"
+            "Mia\\ImageRenderer\\": "src"
         }
     },
     "extra": {
@@ -12,7 +12,7 @@
         },
         "laravel": {
             "providers": [
-                "Valschr\\ImageRenderer\\ServiceProvider"
+                "Mia\\ImageRenderer\\ServiceProvider"
             ]
         }
     },
