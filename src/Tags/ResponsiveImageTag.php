@@ -1,6 +1,6 @@
 <?php
 
-namespace Valschr\ImageRenderer\Tags;
+namespace Mia\ImageRenderer\Tags;
 
 use Statamic\Facades\Asset as AssetFacade;
 use Statamic\Assets\Asset;

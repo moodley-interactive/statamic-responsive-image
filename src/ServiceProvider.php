@@ -1,10 +1,10 @@
 <?php
 
-namespace Valschr\ImageRenderer;
+namespace Mia\ImageRenderer;
 
 use Statamic\Providers\AddonServiceProvider;
-use Valschr\ImageRenderer\Commands\GenerateBlurhashStrings;
-use Valschr\ImageRenderer\Tags\ResponsiveImageTag;
+use Mia\ImageRenderer\Commands\GenerateBlurhashStrings;
+use Mia\ImageRenderer\Tags\ResponsiveImageTag;
 
 
 class ServiceProvider extends AddonServiceProvider
