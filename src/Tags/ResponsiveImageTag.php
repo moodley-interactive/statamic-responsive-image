@@ -28,10 +28,10 @@ class ResponsiveImageTag extends Tags
 	  $srcset = "";
 	  foreach ($this->sizes as $index=>$size) {
 		if ($index !== 0) $srcset .= ', ';
+		$focal = $asset->data()->get("focus");
 		$params = [
 			'w' => $size,
-			'q' => 100,
-			'fit' => 'crop'
+			'fit' => 'crop' . ($focal ? '-' . $focal : '')
 		];
 		// TODO: focal point
 		if ($ratio) $params['h'] = ($size / $ratio);
