@@ -1,6 +1,6 @@
 <picture>
 	@foreach ($srcsets as $srcset)
-		<source sizes="100vw" data-srcset="{{ $srcset["srcset"] }}" type="image/{{ $srcset["type"] }}" @if(!$loop->last) media="(min-width: {{ $srcset["min_width"] }}px)"@endif/>
+		<source data-srcset="{{ $srcset["srcset"] }}" type="image/{{ $srcset["type"] }}" @if(!$loop->last) media="(min-width: {{ $srcset["min_width"] }}px)"@endif/>
 	@endforeach
 	<img
 		onload="
