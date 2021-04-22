@@ -63,7 +63,7 @@ class ResponsiveImageTag extends Tags
 	foreach ($types as $type) {
 		foreach ($bp as $key=>$b) {
 			$param = $this->params->get($key . ':ratio');
-			if (!$param) return;
+			if (!$param) continue;
 			$breakpoint_ratio = $this->getRatio($asset, $param, false);
 			$srcset = null;
 			if (config('statamic.statamic-image-renderer.provider') === 'imgix') {
