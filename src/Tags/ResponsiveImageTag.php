@@ -3,9 +3,11 @@
 namespace Valschr\ImageRenderer\Tags;
 
 use Statamic\Facades\Asset as AssetFacade;
+use Statamic\Assets\Asset;
 use Statamic\Tags\Tags;
 use Statamic\Facades\Image;
 use Statamic\Support\Str;
+use Statamic\Fields\Value;
 
 class ResponsiveImageTag extends Tags
 {
@@ -17,9 +19,23 @@ class ResponsiveImageTag extends Tags
 
   private function getImgixSrcSet($asset, $ratio) {
 	$srcset = "";
+	$asset_url = $asset->url();
 	foreach ($this->sizes as $index=>$size) {
 		if ($index !== 0) $srcset .= ', ';
-		$srcset .= $asset_url . '?w=' . $size . '&q=90&format=auto' . ' ' . $size . 'w';
+		$focal = $asset->data()->get("focus");
+		$fit = 'fit=crop';
+		if (isset($focal)) {
+			$focus = explode("-", $focalPoint);
+			$focusX = intval($focus[0], 10) / 100;
+			$focusY = intval($focus[1], 10) / 100;
+			$fit = 'fit=crop&crop=focalpoint&fp-x=' . $focusX . '&fp-y=' . $focusY;
+		}
+		$params = [
+			'w' => $size,
+			'fit' => $fit
+		];
+		if ($ratio) $params['h'] = ($size / $ratio);
+		$srcset .= $asset_url . '?w=' . $params['w'] . '?h=' . $params['h'] . '&q=90&format=auto&'. $fit . ' ' . $size . 'w';
 	}
 	return $srcset;
   }
@@ -33,9 +49,8 @@ class ResponsiveImageTag extends Tags
 			'w' => $size,
 			'fit' => 'crop' . ($focal ? '-' . $focal : '')
 		];
-		// TODO: focal point
 		if ($ratio) $params['h'] = ($size / $ratio);
-		if ($ratio) $params['fm'] = $type;
+		if ($type) $params['fm'] = $type;
 		$srcset .= config('app.url') . Image::manipulate($asset, $params) . ' ' . $size . 'w';
 	}
 	return $srcset;
@@ -49,8 +64,14 @@ class ResponsiveImageTag extends Tags
 		foreach ($bp as $index=>$b) {
 			$param = $this->params->get($b . ':ratio');
 			$breakpoint_ratio = $this->getRatio($asset, $param, false);
+			$srcset = null;
+			if (config('statamic.statamic-image-renderer.provider') === 'imgix') {
+				$srcset = $this->getImgixSrcSet($asset, $breakpoint_ratio ?: $ratio, $type);
+			} else {
+				$srcset = $this->getGlideSrcSet($asset, $breakpoint_ratio ?: $ratio, $type);
+			}
 			$srcsets[] = [
-				"srcset" => $this->getGlideSrcSet($asset, $breakpoint_ratio ?: $ratio, $type),
+				"srcset" => $srcset,
 				"type" => $type,
 				"min_width" => $b,
 			];
@@ -72,30 +93,41 @@ class ResponsiveImageTag extends Tags
 	return $ratio;
   }
 
-  public function index()
-  {
-      $this->src = $this->params["src"];
-	  if (is_string($this->src)) {
-		$asset = AssetFacade::findByUrl($this->src);
-	  } else {
-		$asset = $this->src->value();
-	  }
-	  if (!$asset) return false;
+	public function index()
+	{
+		$this->src = $this->params["src"];
+		if (is_string($this->src)) {
+			$asset = AssetFacade::findByUrl($this->src);
+		} else if (is_array($this->src)) {
+			// ray($this->src);
+			$asset = $this->src["src"]->value();
+			ray($asset);
+		} else if ($this->src instanceof Asset) {
+			$asset = $this->src;
+		} else if ($this->src instanceof Value) {
+			$asset = $this->src->value();
+			if (is_array($asset)) {
+				$asset = $asset["src"]->value();
+			}
+		} else {
+			$asset = $this->src;
+		}
+		if (!isset($asset) || !$asset) return false;
 
-	  $class = $this->params->get('class');
-	  $ratio = $this->getRatio($asset, $this->params->get('ratio'));
-	  $meta_data = $asset->meta()["data"];
-	  $srcsets = $this->breakpoints($asset, $ratio, $asset->extension());
-      return view('statamic-image-renderer::responsiveImage', [
-		//   "blurhash" => isset($meta_data["blurhash"]) ? $meta_data["blurhash"] : '',
-		  "dominant_color" => isset($meta_data["dominant_color"]) ? $meta_data["dominant_color"] : '#f1f1f1',
-		  "alt" => isset($meta_data["alt"]) ? $meta_data["alt"] : '',
-		  "srcsets" => $srcsets,
-		  "class" => $class,
-		  "height" => $asset->height(),
-		  "width" => $asset->width(),
-		  "placeholder" => $this->getPlaceholder(),
-	  ]);
+		$class = $this->params->get('class');
+		$ratio = $this->getRatio($asset, $this->params->get('ratio'));
+		$meta_data = $asset->meta()["data"];
+		$srcsets = $this->breakpoints($asset, $ratio, $asset->extension());
+		return view('statamic-image-renderer::responsiveImage', [
+			//   "blurhash" => isset($meta_data["blurhash"]) ? $meta_data["blurhash"] : '',
+			"dominant_color" => isset($meta_data["dominant_color"]) ? $meta_data["dominant_color"] : '#f1f1f1',
+			"alt" => isset($meta_data["alt"]) ? $meta_data["alt"] : '',
+			"srcsets" => $srcsets,
+			"class" => $class,
+			"height" => $asset->height(),
+			"width" => $asset->width(),
+			"placeholder" => $this->getPlaceholder(),
+		]);
   }
 
   public function lazyload() {
