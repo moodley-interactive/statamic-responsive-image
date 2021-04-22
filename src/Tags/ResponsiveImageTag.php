@@ -62,7 +62,9 @@ class ResponsiveImageTag extends Tags
 	$srcsets = [];
 	foreach ($types as $type) {
 		foreach ($bp as $key=>$b) {
-			$param = $this->params->get($key . ':ratio');
+			$params = $this->params->all();
+			$ratio = isset($params["ratio"]) && $key === reset($bp) ? $params["ratio"] : false;
+			$param = isset($params[$key . ":ratio"]) ? $params[$key . ":ratio"] : $ratio;
 			if (!$param) continue;
 			$breakpoint_ratio = $this->getRatio($asset, $param, false);
 			$srcset = null;
