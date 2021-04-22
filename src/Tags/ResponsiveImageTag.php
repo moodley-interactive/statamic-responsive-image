@@ -58,17 +58,24 @@ class ResponsiveImageTag extends Tags
 
   public function breakpoints($asset, $ratio, $imageType) {
 	$bp = config('statamic.statamic-image-renderer.breakpoints');
-	$types = [$imageType, "webp"];
+
+	$provider = config('statamic.statamic-image-renderer.provider');
+	if ($provider === "imgix") {
+		$types = ['jpg'];
+	} else {
+		$types = [$imageType, "webp"];
+	}
+
 	$srcsets = [];
 	foreach ($types as $type) {
 		foreach ($bp as $key=>$b) {
 			$params = $this->params->all();
-			$ratio = isset($params["ratio"]) && $key === reset($bp) ? $params["ratio"] : false;
+			$ratio = ($this->params->get("ratio") && $b === reset($bp)) ? $this->params->get("ratio") : false;
 			$param = isset($params[$key . ":ratio"]) ? $params[$key . ":ratio"] : $ratio;
 			if (!$param) continue;
 			$breakpoint_ratio = $this->getRatio($asset, $param, false);
 			$srcset = null;
-			if (config('statamic.statamic-image-renderer.provider') === 'imgix') {
+			if ($provider === "imgix") {
 				$srcset = $this->getImgixSrcSet($asset, $breakpoint_ratio ?: $ratio, $type);
 			} else {
 				$srcset = $this->getGlideSrcSet($asset, $breakpoint_ratio ?: $ratio, $type);
