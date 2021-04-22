@@ -67,13 +67,23 @@ class ResponsiveImageTag extends Tags
 	}
 
 	$srcsets = [];
-	foreach ($bp as $key => $b) {
-		$params = $this->params->all();
-		$ratio = ($this->params->get("ratio") && $b === reset($bp)) ? $this->params->get("ratio") : false;
-		$param = isset($params[$key . ":ratio"]) ? $params[$key . ":ratio"] : $ratio;
-		if (!$param) {
-			if ($b === reset($bp)) {
-				$breakpoint_ratio = $this->getRatio($asset, $param, true);
+	foreach ($types as $type) {
+		foreach ($bp as $key => $b) {
+			$params = $this->params->all();
+			$ratio = ($this->params->get("ratio") && $b === reset($bp)) ? $this->params->get("ratio") : false;
+			$param = isset($params[$key . ":ratio"]) ? $params[$key . ":ratio"] : $ratio;
+			if (!$param) {
+				if ($b === reset($bp)) {
+					$breakpoint_ratio = $this->getRatio($asset, $param, true);
+					$srcset = null;
+					if ($provider === "imgix") {
+						$srcset = $this->getImgixSrcSet($asset, $breakpoint_ratio ?: $ratio, $type);
+					} else {
+						$srcset = $this->getGlideSrcSet($asset, $breakpoint_ratio ?: $ratio, $type);
+					}
+				}
+			} else {
+				$breakpoint_ratio = $this->getRatio($asset, $param, false);
 				$srcset = null;
 				if ($provider === "imgix") {
 					$srcset = $this->getImgixSrcSet($asset, $breakpoint_ratio ?: $ratio, $type);
@@ -81,21 +91,13 @@ class ResponsiveImageTag extends Tags
 					$srcset = $this->getGlideSrcSet($asset, $breakpoint_ratio ?: $ratio, $type);
 				}
 			}
-		} else {
-			$breakpoint_ratio = $this->getRatio($asset, $param, false);
-			$srcset = null;
-			if ($provider === "imgix") {
-				$srcset = $this->getImgixSrcSet($asset, $breakpoint_ratio ?: $ratio, $type);
-			} else {
-				$srcset = $this->getGlideSrcSet($asset, $breakpoint_ratio ?: $ratio, $type);
-			}
-		}
 
-		$srcsets[] = [
-			"srcset" => $srcset,
-			"type" => $type,
-			"min_width" => $b,
-		];
+			$srcsets[] = [
+				"srcset" => $srcset,
+				"type" => $type,
+				"min_width" => $b,
+			];
+		}
 	}
 	return $srcsets;
   }
