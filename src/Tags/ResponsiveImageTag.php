@@ -25,7 +25,7 @@ class ResponsiveImageTag extends Tags
 		$focal = $asset->data()->get("focus");
 		$fit = 'fit=crop';
 		if (isset($focal)) {
-			$focus = explode("-", $focalPoint);
+			$focus = explode("-", $focal);
 			$focusX = intval($focus[0], 10) / 100;
 			$focusY = intval($focus[1], 10) / 100;
 			$fit = 'fit=crop&crop=focalpoint&fp-x=' . $focusX . '&fp-y=' . $focusY;
