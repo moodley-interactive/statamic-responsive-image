@@ -60,16 +60,18 @@ class ResponsiveImageTag extends Tags
 	$bp = config('statamic.statamic-image-renderer.breakpoints');
 
 	$provider = config('statamic.statamic-image-renderer.provider');
+
 	if ($provider === "imgix") {
 		$types = ['jpg'];
 	} else {
 		$types = [$imageType, "webp"];
 	}
 
+	$params = $this->params->all();
 	$srcsets = [];
+	
 	foreach ($types as $type) {
 		foreach ($bp as $key => $b) {
-			$params = $this->params->all();
 			$ratio = ($this->params->get("ratio") && $b === reset($bp)) ? $this->params->get("ratio") : false;
 			$param = isset($params[$key . ":ratio"]) ? $params[$key . ":ratio"] : $ratio;
 			if (!$param) {
@@ -81,6 +83,8 @@ class ResponsiveImageTag extends Tags
 					} else {
 						$srcset = $this->getGlideSrcSet($asset, $breakpoint_ratio ?: $ratio, $type);
 					}
+				} else {
+					continue;
 				}
 			} else {
 				$breakpoint_ratio = $this->getRatio($asset, $param, false);
@@ -123,7 +127,7 @@ class ResponsiveImageTag extends Tags
 		} else if (is_array($this->src)) {
 			// ray($this->src);
 			$asset = $this->src["src"]->value();
-			ray($asset);
+			// ray($asset);
 		} else if ($this->src instanceof Asset) {
 			$asset = $this->src;
 		} else if ($this->src instanceof Value) {
