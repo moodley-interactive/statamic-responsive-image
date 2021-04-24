@@ -11,113 +11,136 @@ use Statamic\Fields\Value;
 
 class ResponsiveImageTag extends Tags
 {
-  protected static $handle = 'resp';
+	protected static $handle = 'resp';
 
-  // Following this article for best practices
-  // https://medium.com/hceverything/applying-srcset-choosing-the-right-sizes-for-responsive-images-at-different-breakpoints-a0433450a4a3
-  protected $sizes = [640, 768, 1024, 1366, 1600, 1920];
+	// Following this article for best practices
+	// https://medium.com/hceverything/applying-srcset-choosing-the-right-sizes-for-responsive-images-at-different-breakpoints-a0433450a4a3
+	protected $sizes = [640, 768, 1024, 1366, 1600, 1920];
 
-  private function getImgixSrcSet($asset, $ratio) {
-	$srcset = "";
-	$asset_url = $asset->url();
-	foreach ($this->sizes as $index=>$size) {
-		if ($index !== 0) $srcset .= ', ';
-		$focal = $asset->data()->get("focus");
-		$fit = 'fit=crop';
-		if (isset($focal)) {
-			$focus = explode("-", $focal);
-			$focusX = intval($focus[0], 10) / 100;
-			$focusY = intval($focus[1], 10) / 100;
-			$fit = 'fit=crop&crop=focalpoint&fp-x=' . $focusX . '&fp-y=' . $focusY;
+	private function getImgixSrcSet($asset, $ratio)
+	{
+		$srcset = "";
+		$asset_url = $asset->url();
+		foreach ($this->sizes as $index => $size) {
+			if ($index !== 0) $srcset .= ', ';
+			$focal = $asset->data()->get("focus");
+			$fit = 'fit=crop';
+			if (isset($focal)) {
+				$focus = explode("-", $focal);
+				$focusX = intval($focus[0], 10) / 100;
+				$focusY = intval($focus[1], 10) / 100;
+				$fit = 'fit=crop&crop=focalpoint&fp-x=' . $focusX . '&fp-y=' . $focusY;
+			}
+			$params = [
+				'w' => $size,
+				'fit' => $fit
+			];
+			if ($ratio) $params['h'] = ($size / $ratio);
+			$srcset .= $asset_url . '?w=' . $params['w'] . '&h=' . $params['h'] . '&q=90&format=auto&' . $fit . ' ' . $size . 'w';
 		}
-		$params = [
-			'w' => $size,
-			'fit' => $fit
-		];
-		if ($ratio) $params['h'] = ($size / $ratio);
-		$srcset .= $asset_url . '?w=' . $params['w'] . '&h=' . $params['h'] . '&q=90&format=auto&'. $fit . ' ' . $size . 'w';
-	}
-	return $srcset;
-  }
-
-  private function getGlideSrcSet($asset, $ratio, $type) {
-	  $srcset = "";
-	  foreach ($this->sizes as $index=>$size) {
-		if ($index !== 0) $srcset .= ', ';
-		$focal = $asset->data()->get("focus");
-		$params = [
-			'w' => $size,
-			'fit' => 'crop' . ($focal ? '-' . $focal : '')
-		];
-		if ($ratio) $params['h'] = ($size / $ratio);
-		if ($type) $params['fm'] = $type;
-		$srcset .= config('app.url') . Image::manipulate($asset, $params) . ' ' . $size . 'w';
-	}
-	return $srcset;
-  }
-
-  public function breakpoints($asset, $ratio, $imageType) {
-	$bp = config('statamic.statamic-image-renderer.breakpoints');
-
-	$provider = config('statamic.statamic-image-renderer.provider');
-
-	if ($provider === "imgix") {
-		$types = ['jpg'];
-	} else {
-		$types = [$imageType, "webp"];
+		return $srcset;
 	}
 
-	$params = $this->params->all();
-	$srcsets = [];
-	
-	foreach ($types as $type) {
-		foreach ($bp as $key => $b) {
-			$ratio = ($this->params->get("ratio") && $b === reset($bp)) ? $this->params->get("ratio") : false;
-			$param = isset($params[$key . ":ratio"]) ? $params[$key . ":ratio"] : $ratio;
-			if (!$param) {
-				if ($b === reset($bp)) {
-					$breakpoint_ratio = $this->getRatio($asset, $param, true);
+	private function getGlideSrcSet($asset, $ratio, $type)
+	{
+		$srcset = "";
+		foreach ($this->sizes as $index => $size) {
+			if ($index !== 0) $srcset .= ', ';
+			$focal = $asset->data()->get("focus");
+			$params = [
+				'w' => $size,
+				'fit' => 'crop' . ($focal ? '-' . $focal : '')
+			];
+			if ($ratio) $params['h'] = ($size / $ratio);
+			if ($type) $params['fm'] = $type;
+			$srcset .= config('app.url') . Image::manipulate($asset, $params) . ' ' . $size . 'w';
+		}
+		return $srcset;
+	}
+
+	public function breakpoints($asset, $ratio, $imageType)
+	{
+		$breakpoints = config('statamic.statamic-image-renderer.breakpoints');
+		$provider = config('statamic.statamic-image-renderer.provider');
+		$container_max_width = config('statamic.statamic-image-renderer.grid.container_max_width', 0);
+		$container_padding = config('statamic.statamic-image-renderer.grid.container_padding', 0);
+		$columns = config('statamic.statamic-image-renderer.grid.columns', 12);
+
+		if ($provider === "imgix") {
+			$types = ['jpg'];
+		} else {
+			$types = [$imageType, "webp"];
+		}
+
+		$params = $this->params->all();
+		$srcsets = [];
+
+		foreach ($types as $type) {
+			foreach ($breakpoints as $breakpoint_name => $breakpoint) {
+				$ratio = ($this->params->get("ratio") && $breakpoint === reset($breakpoints)) ? $this->params->get("ratio") : false;
+				$ratio_param = isset($params[$breakpoint_name . ":ratio"]) ? $params[$breakpoint_name . ":ratio"] : $ratio;
+
+
+				if (!$ratio_param) {
+					if ($breakpoint === reset($breakpoints)) {
+						$breakpoint_ratio = $this->getRatio($asset, $ratio_param, true);
+						$srcset = null;
+						if ($provider === "imgix") {
+							$srcset = $this->getImgixSrcSet($asset, $breakpoint_ratio ?: $ratio, $type);
+						} else {
+							$srcset = $this->getGlideSrcSet($asset, $breakpoint_ratio ?: $ratio, $type);
+						}
+					} else {
+						continue;
+					}
+				} else {
+					$breakpoint_ratio = $this->getRatio($asset, $ratio_param, false);
 					$srcset = null;
 					if ($provider === "imgix") {
 						$srcset = $this->getImgixSrcSet($asset, $breakpoint_ratio ?: $ratio, $type);
 					} else {
 						$srcset = $this->getGlideSrcSet($asset, $breakpoint_ratio ?: $ratio, $type);
 					}
-				} else {
-					continue;
 				}
-			} else {
-				$breakpoint_ratio = $this->getRatio($asset, $param, false);
-				$srcset = null;
-				if ($provider === "imgix") {
-					$srcset = $this->getImgixSrcSet($asset, $breakpoint_ratio ?: $ratio, $type);
+
+				$sizes = "";
+				$col_span = $this->params->get("col_span", 12);
+				$col_span_param = isset($params[$breakpoint_name . ":col_span"]) ? $params[$breakpoint_name . ":col_span"] : $col_span;
+				$container_full_width = $this->params->get("container_full_width", false);
+				$containerPlusPadding = $container_max_width + $container_padding;
+
+				if ($container_full_width) {
+					$sizes .= "calc((100vw / {$columns} ) * {$col_span_param})";
 				} else {
-					$srcset = $this->getGlideSrcSet($asset, $breakpoint_ratio ?: $ratio, $type);
+					$sizes .= "calc(((100vw - {$container_padding}px) / {$columns} ) * {$col_span_param}), ";
+					$sizes .= "(min-width: {$containerPlusPadding}px) calc({$container_max_width}px / {$columns} * {$col_span_param})";
 				}
+
+				$srcsets[] = [
+					"srcset" => $srcset,
+					"type" => $type,
+					"min_width" => $breakpoint,
+					"sizes" => $sizes,
+				];
 			}
-
-			$srcsets[] = [
-				"srcset" => $srcset,
-				"type" => $type,
-				"min_width" => $b,
-			];
 		}
+		return $srcsets;
 	}
-	return $srcsets;
-  }
 
-  public function getPlaceholder() {
-	  return 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
-  }
-
-  public function getRatio($asset, $param, $fallback = true) {
-	$ratio = $fallback ? $asset->width() / $asset->height() : null;
-	if (isset($param) && Str::contains($param, '/')) {
-		[$width, $height] = explode('/', $param);
-		$ratio = $width / $height;
+	public function getPlaceholder()
+	{
+		return 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
 	}
-	return $ratio;
-  }
+
+	public function getRatio($asset, $param, $fallback = true)
+	{
+		$ratio = $fallback ? $asset->width() / $asset->height() : null;
+		if (isset($param) && Str::contains($param, '/')) {
+			[$width, $height] = explode('/', $param);
+			$ratio = $width / $height;
+		}
+		return $ratio;
+	}
 
 	public function index()
 	{
@@ -154,15 +177,16 @@ class ResponsiveImageTag extends Tags
 			"width" => $asset->width(),
 			"placeholder" => $this->getPlaceholder(),
 		]);
-  }
+	}
 
-  public function lazyload() {
-	  return view('statamic-image-renderer::lazyloadscript');
-  }
+	public function lazyload()
+	{
+		return view('statamic-image-renderer::lazyloadscript');
+	}
 
-  public function wildcard($tag)
-  {
-      $this->params->put('src', $this->context->get($tag));
-      return $this->index();
-  }
+	public function wildcard($tag)
+	{
+		$this->params->put('src', $this->context->get($tag));
+		return $this->index();
+	}
 }

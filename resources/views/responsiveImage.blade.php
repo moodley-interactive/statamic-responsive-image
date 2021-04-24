@@ -1,17 +1,14 @@
 <picture>
 	@foreach ($srcsets as $srcset)
-		<source data-srcset="{{ $srcset["srcset"] }}" type="image/{{ $srcset["type"] }}" @if(!$loop->last) media="(min-width: {{ $srcset["min_width"] }}px)"@endif/>
+		<source 
+			sizes="{{ $srcset["sizes"] }}" 
+			type="image/{{ $srcset["type"] }}" 
+			@if(!$loop->last) media="(min-width: {{ $srcset["min_width"] }}px)"@endif 
+			data-srcset="{{ $srcset["srcset"] }}"
+		/>
 	@endforeach
 	<img
-		onload="
-			this.onload=null;
-			this.style.backgroundColor = 'transparent';
-			var imgWidth = this.getBoundingClientRect().width;
-			this.parentNode.querySelectorAll('source')
-					.forEach(function (source) {
-							source.sizes=Math.ceil(imgWidth/window.innerWidth*100)+'vw';
-					});
-		"
+		onload="this.style.backgroundColor = 'transparent';"
 		loading="lazy"
 		height="{{ $height }}"
 		width="{{ $width }}"
