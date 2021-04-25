@@ -23,6 +23,13 @@ All parameters can be mixed, however you have to make sure, that the ratio and c
 {{ resp:image }}
 ```
 
+### Lazyload Script
+After installing the plugin this line must be added after all image tags, preferable at the end of the body.
+
+```
+{{ resp:lazyload }}
+```
+
 ### Provided Ratio
 
 Outputs a 16/9 image on mobile and a 4/3 image on breakpoint lg and up.
