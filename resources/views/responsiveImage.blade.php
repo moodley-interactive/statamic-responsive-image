@@ -1,8 +1,7 @@
 <picture>
 	@foreach ($srcsets as $srcset)
 		<source 
-			sizes="{{ $srcset["sizes"] }}" 
-			type="image/{{ $srcset["type"] }}" 
+			sizes="{{ $srcset["sizes"] }}"
 			@if(!$loop->last) media="(min-width: {{ $srcset["min_width"] }}px)"@endif 
 			data-srcset="{{ $srcset["srcset"] }}"
 		/>
