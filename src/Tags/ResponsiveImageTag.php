@@ -104,16 +104,44 @@ class ResponsiveImageTag extends Tags
 				}
 
 				$sizes = "";
+				$col_span_breakpoints = [];
 				$col_span = $this->params->get("col_span", 12);
+
+				// save all the provided col_span attributes in an array
+				foreach ($breakpoints as $key => $value) {
+					$col_span_breakpoints["default"] = $col_span;
+					if (isset($params[$key . ":col_span"])) {
+						$col_span_breakpoints[$key] = $params[$key . ":col_span"];
+					}
+				}
 				$col_span_param = isset($params[$breakpoint_name . ":col_span"]) ? $params[$breakpoint_name . ":col_span"] : $col_span;
 				$container_full_width = $this->params->get("container_full_width", false);
 				$containerPlusPadding = $container_max_width + $container_padding;
-
 				if ($container_full_width) {
-					$sizes .= "calc((100vw / {$columns} ) * {$col_span_param})";
+					// if container_full_width="true", we don't need fancy calc stuff, as the container is always fullscreen and we can determine the size in vw easily
+					foreach ($col_span_breakpoints as $key => $value) {
+						if ($key === "default") {
+							// do nothing, that gets pushed automatically at the end
+						} else {
+							$sizes .= "(min-width: {$breakpoints[$key]}px) calc((100vw / {$columns}) * {$value}), ";
+						}
+					}
+					// the default sizes attribute with no media query
+					$sizes .= "calc((100vw / {$columns}) * {$value})";
 				} else {
-					$sizes .= "calc(((100vw - {$container_padding}px) / {$columns} ) * {$col_span_param}), ";
-					$sizes .= "(min-width: {$containerPlusPadding}px) calc({$container_max_width}px / {$columns} * {$col_span_param})";
+					// the sizes attribute for the container max width
+					foreach ($col_span_breakpoints as $key => $value) {
+						if ($key === "default") {
+							// do nothing, that gets pushed automatically at the end
+						} else {
+							// the sizes attribute for every other breakpoint
+							$bp_bigger_than_max_width = ($container_max_width - $value) > 0 ? "100vw" : $container_max_width;
+							$sizes .= "(min-width: {$breakpoints[$key]}px) calc(({$bp_bigger_than_max_width} - {$container_padding}px) / {$columns} * {$value}), ";
+						}
+					}
+					$sizes .= "(min-width: {$containerPlusPadding}px) calc({$container_max_width}px / {$columns} * {$value}), ";
+					// the default sizes attribute with no media query
+					$sizes .= "calc(((100vw - {$container_padding}px) / {$columns} ) * {$col_span})";
 				}
 
 				$srcsets[] = [
