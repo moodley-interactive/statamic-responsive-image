@@ -15,6 +15,6 @@
     data-src="{{ $placeholder }}"
 		class="lazyload {{ $class }}"
 		style="background-color: {{ $dominant_color }};"
-    alt="Image description"
+    alt="{{ $alt }}"
     />
 </picture>
