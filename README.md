@@ -5,6 +5,22 @@
 Install via composer:
 `composer require mia/statamic-image-renderer`
 
+Add [lazysizes](https://github.com/aFarkas/lazysizes) to your sites js:
+
+```
+yarn add lazysizes
+```
+or
+```
+npm install lazysizes
+```
+
+Then add it to your js file:
+
+```
+import lazySizes from 'lazysizes'
+```
+
 ## Config
 
 Run and select "XXX"
@@ -21,13 +37,6 @@ All parameters can be mixed, however you have to make sure, that the ratio and c
 
 ```
 {{ resp:image }}
-```
-
-### Lazyload Script
-After installing the plugin this line must be added after all image tags, preferable at the end of the body.
-
-```
-{{ resp:lazyload }}
 ```
 
 ### Provided Ratio

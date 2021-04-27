@@ -7,7 +7,6 @@ use Statamic\Contracts\Assets\AssetRepository;
 use Statamic\Facades\Asset as AssetFacade;
 use Illuminate\Console\Command;
 use Statamic\Console\RunsInPlease;
-use Statamic\Facades\Image;
 use League\Glide\Server;
 use Statamic\Imaging\ImageGenerator;
 use Bepsvpt\Blurhash\Facades\BlurHash;
