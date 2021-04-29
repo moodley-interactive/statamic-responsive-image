@@ -5,6 +5,9 @@
 Install via composer:
 `composer require mia/statamic-image-renderer`
 
+Publish the config:
+`php artisan vendor:publish --tag="statamic-image-renderer-config"`
+
 Add [lazysizes](https://github.com/aFarkas/lazysizes) to your sites js:
 
 ```

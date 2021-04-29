@@ -60,11 +60,11 @@ class ResponsiveImageTag extends Tags
 
 	public function breakpoints($asset, $ratio, $imageType)
 	{
-		$breakpoints = config('statamic.statamic-image-renderer.breakpoints');
-		$provider = config('statamic.statamic-image-renderer.provider');
-		$container_max_width = config('statamic.statamic-image-renderer.grid.container_max_width', 0);
-		$container_padding = config('statamic.statamic-image-renderer.grid.container_padding', 0);
-		$columns = config('statamic.statamic-image-renderer.grid.columns', 12);
+		$breakpoints = config('statamic-image-renderer.breakpoints');
+		$provider = config('statamic-image-renderer.provider');
+		$container_max_width = config('statamic-image-renderer.grid.container_max_width', 0);
+		$container_padding = config('statamic-image-renderer.grid.container_padding', 0);
+		$columns = config('statamic-image-renderer.grid.columns', 12);
 
 		if ($provider === "imgix") {
 			$types = ['jpg'];
