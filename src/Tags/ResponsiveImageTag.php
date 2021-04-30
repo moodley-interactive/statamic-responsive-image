@@ -66,6 +66,9 @@ class ResponsiveImageTag extends Tags
 		$container_padding = config('statamic-image-renderer.grid.container_padding', 0);
 		$columns = config('statamic-image-renderer.grid.columns', 12);
 
+		// push a mobile breakpoint, so we can use all other tw breakpoints later
+		$breakpoints = array("mobile" => 0) + $breakpoints;
+
 		if ($provider === "imgix") {
 			$types = ['jpg'];
 		} else {
