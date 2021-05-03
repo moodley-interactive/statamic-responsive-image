@@ -17,19 +17,23 @@ class ResponsiveImageTag extends Tags
 	// https://medium.com/hceverything/applying-srcset-choosing-the-right-sizes-for-responsive-images-at-different-breakpoints-a0433450a4a3
 	protected $sizes = [640, 768, 1024, 1366, 1600, 1920];
 
-	private function getImgixSrcSet($asset, $ratio)
+	private function getImgixSrcSet($asset, $ratio, $crop_mode)
 	{
 		$srcset = "";
 		$asset_url = $asset->url();
 		foreach ($this->sizes as $index => $size) {
 			if ($index !== 0) $srcset .= ', ';
-			$focal = $asset->data()->get("focus");
-			$fit = 'fit=crop';
-			if (isset($focal)) {
-				$focus = explode("-", $focal);
-				$focusX = intval($focus[0], 10) / 100;
-				$focusY = intval($focus[1], 10) / 100;
-				$fit = 'fit=crop&crop=focalpoint&fp-x=' . $focusX . '&fp-y=' . $focusY;
+			if ($crop_mode === "default") {
+				$focal = $asset->data()->get("focus");
+				$fit = 'fit=crop';
+				if (isset($focal)) {
+					$focus = explode("-", $focal);
+					$focusX = intval($focus[0], 10) / 100;
+					$focusY = intval($focus[1], 10) / 100;
+					$fit = 'fit=crop&crop=focalpoint&fp-x=' . $focusX . '&fp-y=' . $focusY;
+				}
+			} elseif ($crop_mode == "faces") {
+				$fit = 'fit=crop&crop=faces';
 			}
 			$params = [
 				'w' => $size,
@@ -82,14 +86,14 @@ class ResponsiveImageTag extends Tags
 			foreach ($breakpoints as $breakpoint_name => $breakpoint) {
 				$ratio = ($this->params->get("ratio") && $breakpoint === reset($breakpoints)) ? $this->params->get("ratio") : false;
 				$ratio_param = isset($params[$breakpoint_name . ":ratio"]) ? $params[$breakpoint_name . ":ratio"] : $ratio;
-
+				$crop_mode = isset($params["crop"]) ? $params["crop"] : "default";
 
 				if (!$ratio_param) {
 					if ($breakpoint === reset($breakpoints)) {
 						$breakpoint_ratio = $this->getRatio($asset, $ratio_param, true);
 						$srcset = null;
 						if ($provider === "imgix") {
-							$srcset = $this->getImgixSrcSet($asset, $breakpoint_ratio ?: $ratio, $type);
+							$srcset = $this->getImgixSrcSet($asset, $breakpoint_ratio ?: $ratio, $crop_mode);
 						} else {
 							$srcset = $this->getGlideSrcSet($asset, $breakpoint_ratio ?: $ratio, $type);
 						}
@@ -100,7 +104,7 @@ class ResponsiveImageTag extends Tags
 					$breakpoint_ratio = $this->getRatio($asset, $ratio_param, false);
 					$srcset = null;
 					if ($provider === "imgix") {
-						$srcset = $this->getImgixSrcSet($asset, $breakpoint_ratio ?: $ratio, $type);
+						$srcset = $this->getImgixSrcSet($asset, $breakpoint_ratio ?: $ratio, $crop_mode);
 					} else {
 						$srcset = $this->getGlideSrcSet($asset, $breakpoint_ratio ?: $ratio, $type);
 					}

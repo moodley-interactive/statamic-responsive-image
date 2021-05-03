@@ -63,6 +63,13 @@ Sets the correct size on mobile and desktop and takes the page grid in account. 
 This tells the tag, that this image is not in the page grid and is rather a fullscreen image.
 
 ```
-{{ resp:image container_full_width="true }}
+{{ resp:image container_full_width="true" }}
+```
+### Crop to faces (only supported with imgix)
+
+Crop to faces in the picture instead of the focalpoint or center.
+
+```
+{{ resp:image crop="faces" }}
 ```
 
