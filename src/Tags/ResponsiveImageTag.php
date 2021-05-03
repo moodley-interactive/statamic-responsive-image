@@ -197,11 +197,14 @@ class ResponsiveImageTag extends Tags
 		$class = $this->params->get('class');
 		$ratio = $this->getRatio($asset, $this->params->get('ratio'));
 		$meta_data = $asset->meta()["data"];
+		$alt_from_asset = isset($meta_data["alt"]) ? $meta_data["alt"] : '';
+		$alt = $this->params->get('alt', $alt_from_asset);
 		$srcsets = $this->breakpoints($asset, $ratio, $asset->extension());
+
 		return view('statamic-image-renderer::responsiveImage', [
 			//   "blurhash" => isset($meta_data["blurhash"]) ? $meta_data["blurhash"] : '',
 			"dominant_color" => isset($meta_data["dominant_color"]) ? $meta_data["dominant_color"] : '#f1f1f1',
-			"alt" => isset($meta_data["alt"]) ? $meta_data["alt"] : '',
+			"alt" => $alt,
 			"srcsets" => array_reverse($srcsets),
 			"class" => $class,
 			"height" => $asset->height(),
