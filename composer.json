@@ -18,6 +18,8 @@
     },
     "require": {
         "bepsvpt/blurhash": "^1.0",
-        "league/color-extractor": "^0.3.2"
+        "league/color-extractor": "^0.3.2",
+        "spatie/laravel-ray": "^1.17",
+        "ozdemirburak/iris": "^2.3"
     }
 }

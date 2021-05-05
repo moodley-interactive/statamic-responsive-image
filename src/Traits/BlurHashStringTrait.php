@@ -4,13 +4,13 @@ namespace Mia\ImageRenderer\Traits;
 
 use Bepsvpt\Blurhash\Facades\BlurHash;
 use League\ColorExtractor\Color;
-use League\ColorExtractor\ColorExtractor;
 use League\ColorExtractor\Palette;
 use League\Glide\Server;
 use Statamic\Contracts\Assets\Asset;
 use Statamic\Contracts\Assets\AssetRepository;
 use Statamic\Facades\Asset as AssetFacade;
 use Statamic\Imaging\ImageGenerator;
+use OzdemirBurak\Iris\Color\Hex;
 
 trait BlurHashStringTrait
 {
@@ -47,8 +47,14 @@ trait BlurHashStringTrait
         $fullPath = $pathPrefix . $path->getPath();
         // create palette and return the dominant color
         $palette = Palette::fromFileName($fullPath);
-        $extractor = new ColorExtractor($palette, Color::fromHexToInt('#f1f1f1'));
-        return Color::fromIntToHex($extractor->extract(1)[0]);
+        $topFive = $palette->getMostUsedColors(5);
+        $most_used_color = array_key_first($topFive);
+        $most_used_hex = Color::fromIntToHex($most_used_color);
+        $color = new hex($most_used_hex);
+        $white = new Hex('#fff');
+        $hsl_value_muted = $color->mix($white, 66);
+        $muted = "#" . implode("", $hsl_value_muted->values());
+        return $muted;
     }
 
     /**
@@ -73,9 +79,9 @@ trait BlurHashStringTrait
             $asset->set("blurhash", $hash);
         }
 
+        $color = $this->getColor($server->getCache()->get($path));
+        $asset->set("dominant_color", $color);
         if (!$dominantColorFromMeta) {
-            $color = $this->getColor($server->getCache()->get($path));
-            $asset->set("dominant_color", $color);
         }
         $asset->writeMeta($meta = $asset->generateMeta());
     }
