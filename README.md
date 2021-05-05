@@ -1,6 +1,6 @@
 # moodley interactive - Responsive image Statamic addon
 
-Demo: https://
+[Demo](https://responsive-image-demo.moodley.dev/): https://responsive-image-demo.moodley.dev/
 ## Installation
 
 Install via composer:
@@ -30,9 +30,11 @@ import lazySizes from 'lazysizes'
 The published config can be found in `config/statamic-image-renderer.php` and you can set up the breakpoints, the image provider and the container size for your main content.
 ## Tag Usage
 
-In all the examples the assets field is called `image` in the blueprint. Can be called anything, thats up to you.
+In all the examples the assets field is called `image` in the blueprint. Can be called anything, thats up to your fieldsets/blueprint.
 
 All parameters can be mixed, however you have to make sure, that the ratio and col_span attributes have a corresponding breakpoint set up. You can't have `md:ratio="4/3"` and `lg:col_span="4"`. The parameter `col_span` expects a ratio to be set up.
+
+The `col_span` attribute is the most important one, as it tells the browser which size of the image it should load. So the `{{ resp:image }}` tag should never be used without it, or the loaded image size is based on the viewport width.
 
 ### Basic Tag
 
