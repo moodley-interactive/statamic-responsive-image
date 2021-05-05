@@ -79,9 +79,9 @@ trait BlurHashStringTrait
             $asset->set("blurhash", $hash);
         }
 
-        $color = $this->getColor($server->getCache()->get($path));
-        $asset->set("dominant_color", $color);
         if (!$dominantColorFromMeta) {
+            $color = $this->getColor($server->getCache()->get($path));
+            $asset->set("dominant_color", $color);
         }
         $asset->writeMeta($meta = $asset->generateMeta());
     }
