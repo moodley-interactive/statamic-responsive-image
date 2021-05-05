@@ -86,6 +86,10 @@ class ResponsiveImageTag extends Tags
 			foreach ($breakpoints as $breakpoint_name => $breakpoint) {
 				$ratio = ($this->params->get("ratio") && $breakpoint === reset($breakpoints)) ? $this->params->get("ratio") : false;
 				$ratio_param = isset($params[$breakpoint_name . ":ratio"]) ? $params[$breakpoint_name . ":ratio"] : $ratio;
+				if ($ratio_param) {
+					$split_ratio_param = explode("/", $ratio_param);
+					$ratio_value = $split_ratio_param[0] / $split_ratio_param[1];
+				}
 				$crop_mode = isset($params["crop"]) ? $params["crop"] : "default";
 
 				if (!$ratio_param) {
@@ -121,7 +125,7 @@ class ResponsiveImageTag extends Tags
 						$col_span_breakpoints[$key] = $params[$key . ":col_span"];
 					}
 				}
-				$col_span_param = isset($params[$breakpoint_name . ":col_span"]) ? $params[$breakpoint_name . ":col_span"] : $col_span;
+
 				$container_full_width = $this->params->get("container_full_width", false);
 				$containerPlusPadding = $container_max_width + $container_padding;
 				if ($container_full_width) {
@@ -151,10 +155,20 @@ class ResponsiveImageTag extends Tags
 					$sizes .= "calc(((100vw - {$container_padding}px) / {$columns} ) * {$col_span})";
 				}
 
+				if (isset($ratio_value)) {
+					$width = 1920;
+					$height = 1920 / $ratio_value;
+				} else {
+					$width = $asset->width();
+					$height = $asset->height();
+				}
+
 				$srcsets[] = [
 					"srcset" => $srcset,
 					"type" => $type,
 					"min_width" => $breakpoint,
+					"width" => $width,
+					"height" => $height,
 					"sizes" => $sizes,
 				];
 			}
@@ -162,9 +176,21 @@ class ResponsiveImageTag extends Tags
 		return $srcsets;
 	}
 
-	public function getPlaceholder()
+	public function generateSVG($width, $height, $color)
 	{
-		return 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
+		return view('statamic-image-renderer::placeholderSvg', [
+			'width' => $width,
+			'height' => $height,
+			'color' => $color,
+		])->render();
+	}
+
+	public function getPlaceholder($width, $height, $color)
+	{
+		$svg = $this->generateSVG($width, $height, $color);
+		$base64Svg = base64_encode($svg);
+
+		return "data:image/svg+xml;base64,{$base64Svg}";
 	}
 
 	public function getRatio($asset, $param, $fallback = true)
@@ -183,9 +209,7 @@ class ResponsiveImageTag extends Tags
 		if (is_string($this->src)) {
 			$asset = AssetFacade::findByUrl($this->src);
 		} else if (is_array($this->src)) {
-			// ray($this->src);
 			$asset = $this->src["src"]->value();
-			// ray($asset);
 		} else if ($this->src instanceof Asset) {
 			$asset = $this->src;
 		} else if ($this->src instanceof Value) {
@@ -204,16 +228,18 @@ class ResponsiveImageTag extends Tags
 		$alt_from_asset = isset($meta_data["alt"]) ? $meta_data["alt"] : '';
 		$alt = $this->params->get('alt', $alt_from_asset);
 		$srcsets = $this->breakpoints($asset, $ratio, $asset->extension());
+		$reversed_srcsets = array_reverse($srcsets);
+		$dominant_color = isset($meta_data["dominant_color"]) ? $meta_data["dominant_color"] : '#f1f1f1';
 
 		return view('statamic-image-renderer::responsiveImage', [
 			//   "blurhash" => isset($meta_data["blurhash"]) ? $meta_data["blurhash"] : '',
-			"dominant_color" => isset($meta_data["dominant_color"]) ? $meta_data["dominant_color"] : '#f1f1f1',
+			"dominant_color" => $dominant_color,
 			"alt" => $alt,
-			"srcsets" => array_reverse($srcsets),
+			"srcsets" => $reversed_srcsets,
 			"class" => $class,
-			"height" => $asset->height(),
-			"width" => $asset->width(),
-			"placeholder" => $this->getPlaceholder(),
+			"height" => $srcsets[0]["width"],
+			"width" => $srcsets[0]["height"],
+			"placeholder" => $this->getPlaceholder($srcsets[0]["width"], $srcsets[0]["height"], $dominant_color),
 		]);
 	}
 
