@@ -1,5 +1,6 @@
-# moodley interactive responsive image statamic addon
+# moodley interactive - Responsive image Statamic addon
 
+Demo: https://
 ## Installation
 
 Install via composer:
@@ -26,10 +27,7 @@ import lazySizes from 'lazysizes'
 
 ## Config
 
-Run and select "XXX"
-```
-php artisan vendor:publish
-```
+The published config can be found in `config/statamic-image-renderer.php` and you can set up the breakpoints, the image provider and the container size for your main content.
 ## Tag Usage
 
 In all the examples the assets field is called `image` in the blueprint. Can be called anything, thats up to you.
