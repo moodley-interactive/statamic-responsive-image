@@ -1,14 +1,28 @@
 {
     "name": "mia/statamic-image-renderer",
+    "keywords": [
+        "statamic",
+        "responsive",
+        "images",
+        "imgix",
+        "glide"
+    ],
+    "homepage": "https://github.com/moodley-interactive/statamic-responsive-image",
+    "license": "MIT",
     "autoload": {
         "psr-4": {
             "Mia\\ImageRenderer\\": "src"
         }
     },
+    "authors": [
+        {
+            "name": "moodley interactive"
+        }
+    ],
     "extra": {
         "statamic": {
-            "name": "Responsive Image Renderer",
-            "description": "Responsive Image Rendering addon"
+            "name": "Responsive Image Addon",
+            "description": "Generates art directed picture elements. Works with Glide and Imgix."
         },
         "laravel": {
             "providers": [
