@@ -16,7 +16,7 @@
 
 ## Motivation
 
-The motivation was, that we needed a solution that works with Glide and Imgix in the first place. And all CPU heavy calculations, like fallback images (e.g.: dominant color placeholder), should not be done in runtime. Further we needed the `sizes` attribute to be calculated based on our grid system, to make this super easy, we used `col_span` as a parameter, just you are used to from Tailwind.
+The motivation was, that we needed a solution that works with Glide and Imgix in the first place. And all CPU heavy calculations, like fallback images (e.g.: dominant color placeholder), should not be done in runtime. Further we needed the `sizes` attribute to be calculated based on our grid system, to make this super easy, we used `col_span` as a parameter, just as you are used to from Tailwind.
 
 ## Installation
 
