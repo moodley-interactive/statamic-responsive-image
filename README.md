@@ -28,6 +28,10 @@ import lazySizes from 'lazysizes'
 ## Config
 
 The published config can be found in `config/statamic-image-renderer.php` and you can set up the breakpoints, the image provider and the container size for your main content.
+
+## Placeholder
+
+Placeholder are getting generated on upload. If you add the addon to an existing site, you can generate the placeholders for all assets already uploaded with a command. To to so run `php please resp:generate`.
 ## Tag Usage
 
 In all the examples the assets field is called `image` in the blueprint. Can be called anything, thats up to your fieldsets/blueprint.
