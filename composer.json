@@ -19,7 +19,8 @@
     "require": {
         "bepsvpt/blurhash": "^1.0",
         "league/color-extractor": "^0.3.2",
-        "ozdemirburak/iris": "^2.3"
+        "ozdemirburak/iris": "^2.3",
+        "kornrunner/blurhash": "^1.2"
     },
     "require-dev": {
         "spatie/laravel-ray": "^1.17"

@@ -185,12 +185,12 @@ class ResponsiveImageTag extends Tags
 		])->render();
 	}
 
-	public function getPlaceholder($width, $height, $color)
+	public function getPlaceholder($width, $height, $color, $blurhash_base64)
 	{
-		$svg = $this->generateSVG($width, $height, $color);
-		$base64Svg = base64_encode($svg);
+		// $svg = $this->generateSVG($width, $height, $color);
+		// $base64Svg = base64_encode($svg);
 
-		return "data:image/svg+xml;base64,{$base64Svg}";
+		return "data:image/jpg;base64,{$blurhash_base64}";
 	}
 
 	public function getRatio($asset, $param, $fallback = true)
@@ -230,6 +230,7 @@ class ResponsiveImageTag extends Tags
 		$srcsets = $this->breakpoints($asset, $ratio, $asset->extension());
 		$reversed_srcsets = array_reverse($srcsets);
 		$dominant_color = isset($meta_data["dominant_color"]) ? $meta_data["dominant_color"] : '#f1f1f1';
+		$blurhash_base64 = isset($meta_data["blurhash_base64"]) ? $meta_data["blurhash_base64"] : '';
 
 		return view('statamic-image-renderer::responsiveImage', [
 			//   "blurhash" => isset($meta_data["blurhash"]) ? $meta_data["blurhash"] : '',
@@ -239,7 +240,7 @@ class ResponsiveImageTag extends Tags
 			"class" => $class,
 			"height" => $srcsets[0]["width"],
 			"width" => $srcsets[0]["height"],
-			"placeholder" => $this->getPlaceholder($srcsets[0]["width"], $srcsets[0]["height"], $dominant_color),
+			"placeholder" => $this->getPlaceholder($srcsets[0]["width"], $srcsets[0]["height"], $dominant_color, $blurhash_base64),
 		]);
 	}
 

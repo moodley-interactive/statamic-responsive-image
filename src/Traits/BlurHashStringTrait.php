@@ -2,7 +2,7 @@
 
 namespace Mia\ImageRenderer\Traits;
 
-use Bepsvpt\Blurhash\Facades\BlurHash;
+use kornrunner\Blurhash\Blurhash;
 use League\ColorExtractor\Color;
 use League\ColorExtractor\Palette;
 use League\Glide\Server;
@@ -19,6 +19,7 @@ trait BlurHashStringTrait
      */
     public function generate(AssetRepository $assets, $output = false)
     {
+        $count = 0;
         $assets = $assets->all()->filter(function (Asset $asset) {
             return $asset->isImage() && $asset->extension() !== 'svg';
         });
@@ -26,11 +27,12 @@ trait BlurHashStringTrait
             $this->info("Generating blurhash & dominant_color strings for {$assets->count()} assets.");
             $this->getOutput()->progressStart($assets->count());
         }
-        $assets->each(function (Asset $asset) use ($output) {
+        $assets->each(function (Asset $asset) use ($output, &$count) {
             $this->generateBlurHashString($asset);
             if ($output) {
                 $this->getOutput()->progressAdvance();
             }
+            $count++;
         });
 
         return 0;
@@ -71,12 +73,50 @@ trait BlurHashStringTrait
 
         // generate a small version of the image, to make blurhashes life easier and to support files on s3
         $path = $imageGenerator->generateByAsset($asset, [
-            'w' => 120,
+            'w' => 40,
         ]);
 
+        $image = imagecreatefromstring($server->getCache()->read($path));
+        if ($image) {
+
+            $width = imagesx($image);
+            $height = imagesy($image);
+
+            $pixels = [];
+            for ($y = 0; $y < $height; ++$y) {
+                $row = [];
+                for ($x = 0; $x < $width; ++$x) {
+                    $index = imagecolorat($image, $x, $y);
+                    $colors = imagecolorsforindex($image, $index);
+
+                    $row[] = [$colors['red'], $colors['green'], $colors['blue']];
+                }
+                $pixels[] = $row;
+            }
+
+            $components_x = 4;
+            $components_y = 3;
+            $blurhash = Blurhash::encode($pixels, $components_x, $components_y);
+
+            $pixels = Blurhash::decode($blurhash, $width, $height);
+
+            $image  = imagecreatetruecolor($width, $height);
+            for ($y = 0; $y < $height; ++$y) {
+                for ($x = 0; $x < $width; ++$x) {
+                    [$r, $g, $b] = $pixels[$y][$x];
+                    imagesetpixel($image, $x, $y, imagecolorallocate($image, $r, $g, $b));
+                }
+            }
+            ob_start();
+            imagejpeg($image);
+            $image_data = ob_get_contents();
+            ob_end_clean();
+            $image_data_base64 = base64_encode($image_data);
+
+            $asset->set("blurhash", $blurhash);
+            $asset->set("blurhash_base64", $image_data_base64);
+        }
         if (!$blurhashFromMeta) {
-            $hash = BlurHash::encode($server->getCache()->read($path));
-            $asset->set("blurhash", $hash);
         }
 
         if (!$dominantColorFromMeta) {
