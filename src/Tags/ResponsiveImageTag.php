@@ -36,7 +36,7 @@ class ResponsiveImageTag extends Tags
 				'fit' => $fit
 			];
 			if ($ratio) $params['h'] = ($size / $ratio);
-			$srcset .= $asset_url . '?w=' . $params['w'] . '&h=' . $params['h'] . '&q=90&format=auto&' . $fit . ' ' . $size . 'w';
+			$srcset .= $asset_url . '?w=' . $params['w'] . '&h=' . $params['h'] . '&q=90&auto=format&' . $fit . ' ' . $size . 'w';
 		}
 		return $srcset;
 	}
