@@ -8,6 +8,8 @@ use Statamic\Tags\Tags;
 use Statamic\Facades\Image;
 use Statamic\Support\Str;
 use Statamic\Fields\Value;
+use Cache;
+
 
 class ResponsiveImageTag extends Tags
 {
@@ -207,16 +209,21 @@ class ResponsiveImageTag extends Tags
 	{
 		$this->src = $this->params["src"];
 		if (is_string($this->src)) {
-			$asset = AssetFacade::findByUrl($this->src);
+			$asset = Cache::rememberForever('image_' . $this->src, function () {
+				return AssetFacade::findByUrl($this->src);
+			});
 		} else if (is_array($this->src)) {
 			$asset = $this->src["src"]->value();
 		} else if ($this->src instanceof Asset) {
 			$asset = $this->src;
 		} else if ($this->src instanceof Value) {
-			$asset = $this->src->value();
-			if (is_array($asset)) {
-				$asset = $asset["src"]->value();
-			}
+			$asset = Cache::rememberForever('image_' . $this->src->raw(), function () {
+				$tmp = $this->src->value();
+				if (is_array($tmp)) {
+					$asset = $asset["src"]->value();
+				}
+				return $tmp;
+			});
 		} else {
 			$asset = $this->src;
 		}
