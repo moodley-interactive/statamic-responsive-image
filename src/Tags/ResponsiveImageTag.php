@@ -22,7 +22,8 @@ class ResponsiveImageTag extends Tags
 	private function getImgixSrcSet($asset, $ratio, $crop_mode)
 	{
 		$srcset = "";
-		$asset_url = $asset->url();
+		$asset_url = $asset->url() ?: config('statamic-image-renderer.imgix_url') . '/' . $asset->path();
+
 		foreach ($this->sizes as $index => $size) {
 			if ($index !== 0) $srcset .= ', ';
 			if ($crop_mode === "default") {
