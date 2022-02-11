@@ -11,7 +11,8 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Mia\\ImageRenderer\\": "src"
+            "Mia\\ImageRenderer\\": "src",
+			"League\\ColorExtractor\\": "vendor/league/color-extractor/src/League/ColorExtractor/"
         }
     },
     "authors": [
@@ -32,7 +33,7 @@
     },
     "require": {
         "bepsvpt/blurhash": "^1.0",
-        "league/color-extractor": "^0.3.3",
+        "league/color-extractor": "0.3.3",
         "ozdemirburak/iris": "^2.3"
     },
     "require-dev": {
