@@ -244,8 +244,8 @@ class ResponsiveImageTag extends Tags
 			"alt" => $alt,
 			"srcsets" => $reversed_srcsets,
 			"class" => $class,
-			"height" => $srcsets[0]["width"],
-			"width" => $srcsets[0]["height"],
+			"width" => $srcsets[0]["width"],
+			"height" => $srcsets[0]["height"],
 			"placeholder" => $this->getPlaceholder($srcsets[0]["width"], $srcsets[0]["height"], $dominant_color),
 		]);
 	}
