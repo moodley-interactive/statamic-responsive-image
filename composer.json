@@ -12,7 +12,7 @@
     "autoload": {
         "psr-4": {
             "Mia\\ImageRenderer\\": "src",
-			"League\\ColorExtractor\\": "vendor/mihairu35/color-extractor/src/League/ColorExtractor/"
+			"League\\ColorExtractor\\": "vendor/league/color-extractor/src/League/ColorExtractor/"
         }
     },
     "authors": [
@@ -33,7 +33,7 @@
     },
     "require": {
         "bepsvpt/blurhash": "^1.0",
-        "mihairu35/color-extractor": "^0.3.3",
+        "league/color-extractor": "0.3.3",
         "ozdemirburak/iris": "^2.3"
     },
     "require-dev": {
@@ -43,7 +43,7 @@
         {
             "type": "package",
             "package": {
-                "name": "mihairu35/color-extractor",
+                "name": "league/color-extractor",
                 "version": "0.3.3",
                 "source": {
                     "url": "https://github.com/Mihairu35/color-extractor.git",
