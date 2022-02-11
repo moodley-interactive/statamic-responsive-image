@@ -37,5 +37,19 @@
     },
     "require-dev": {
         "spatie/laravel-ray": "^1.17"
-    }
+    },
+	"repositories": [
+        {
+            "type": "package",
+            "package": {
+                "name": "league/color-extractor",
+                "version": "0.3.3",
+                "source": {
+                    "url": "https://github.com/Mihairu35/color-extractor.git",
+                    "type": "git",
+                    "reference": "master"
+                }
+            }
+        }
+    ]
 }

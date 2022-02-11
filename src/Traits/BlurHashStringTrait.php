@@ -63,7 +63,8 @@ trait BlurHashStringTrait
     public function generateBlurHashString($asset)
     {
         $assetFromFacade = AssetFacade::findById($asset->id());
-		if (!$assetFromFacade->isImage()) return;
+		if (!$assetFromFacade) return;
+        if (!$assetFromFacade->isImage() || $assetFromFacade->extension() == 'svg') return;
         $blurhashFromMeta = $assetFromFacade->get("blurhash");
         $dominantColorFromMeta = $assetFromFacade->get("dominant_color");
         $imageGenerator = app(ImageGenerator::class);
