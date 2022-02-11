@@ -32,7 +32,7 @@
     },
     "require": {
         "bepsvpt/blurhash": "^1.0",
-        "league/color-extractor": "^0.3.2",
+        "league/color-extractor": "^0.3.3",
         "ozdemirburak/iris": "^2.3"
     },
     "require-dev": {
