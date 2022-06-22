@@ -84,6 +84,7 @@ trait BlurHashStringTrait
             $color = $this->getColor($server->getCache()->get($path));
             $asset->set("dominant_color", $color);
         }
-        $asset->writeMeta($meta = $asset->generateMeta());
+
+		$asset->save(); // Save the meta data and clear the cache
     }
 }
