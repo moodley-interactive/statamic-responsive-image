@@ -12,7 +12,7 @@
     "autoload": {
         "psr-4": {
             "Mia\\ImageRenderer\\": "src",
-			"League\\ColorExtractor\\": "vendor/league/color-extractor/src/League/ColorExtractor/"
+			"JonasKohl\\ColorExtractor\\": "vendor/jonaskohl/color-extractor/src/JonasKohl/ColorExtractor/"
         }
     },
     "authors": [
@@ -33,24 +33,10 @@
     },
     "require": {
         "bepsvpt/blurhash": "^1.0",
-        "league/color-extractor": "0.3.3",
+		"jonaskohl/color-extractor": "^0.4",
         "ozdemirburak/iris": "^2.3"
     },
     "require-dev": {
         "spatie/laravel-ray": "^1.17"
-    },
-	"repositories": [
-        {
-            "type": "package",
-            "package": {
-                "name": "league/color-extractor",
-                "version": "0.3.3",
-                "source": {
-                    "url": "https://github.com/Mihairu35/color-extractor.git",
-                    "type": "git",
-                    "reference": "master"
-                }
-            }
-        }
-    ]
+    }
 }

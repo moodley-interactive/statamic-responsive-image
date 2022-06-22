@@ -3,8 +3,8 @@
 namespace Mia\ImageRenderer\Traits;
 
 use Bepsvpt\Blurhash\Facades\BlurHash;
-use League\ColorExtractor\Color;
-use League\ColorExtractor\Palette;
+use JonasKohl\ColorExtractor\Color;
+use JonasKohl\ColorExtractor\Palette;
 use League\Glide\Server;
 use Statamic\Contracts\Assets\Asset;
 use Statamic\Contracts\Assets\AssetRepository;
