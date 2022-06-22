@@ -5,7 +5,7 @@ namespace Mia\ImageRenderer\Traits;
 use Bepsvpt\Blurhash\Facades\BlurHash;
 use JonasKohl\ColorExtractor\Color;
 use JonasKohl\ColorExtractor\Palette;
-use League\Glide\Server;
+use Statamic\Imaging\GlideServer;
 use Statamic\Contracts\Assets\Asset;
 use Statamic\Contracts\Assets\AssetRepository;
 use Statamic\Facades\Asset as AssetFacade;
@@ -42,9 +42,9 @@ trait BlurHashStringTrait
     protected function getColor($path)
     {
         // get the filesystems path prefix
-        $pathPrefix = $path->getFileSystem()->getAdapter()->getPathPrefix();
+        $pathPrefix = app(GlideServer::class)->cachePath();
         // assemble the full path to the image
-        $fullPath = $pathPrefix . $path->getPath();
+        $fullPath = $pathPrefix.'/'.$path->getPath();
         // create palette and return the dominant color
         $palette = Palette::fromFileName($fullPath);
         $topFive = $palette->getMostUsedColors(5);
@@ -68,7 +68,7 @@ trait BlurHashStringTrait
         $blurhashFromMeta = $assetFromFacade->get("blurhash");
         $dominantColorFromMeta = $assetFromFacade->get("dominant_color");
         $imageGenerator = app(ImageGenerator::class);
-        $server = app(Server::class);
+        $server = app(GlideServer::class)->create();
 
         // generate a small version of the image, to make blurhashes life easier and to support files on s3
         $path = $imageGenerator->generateByAsset($asset, [
