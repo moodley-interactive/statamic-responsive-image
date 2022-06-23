@@ -5,7 +5,6 @@ namespace Mia\ImageRenderer\Traits;
 use Bepsvpt\Blurhash\Facades\BlurHash;
 use JonasKohl\ColorExtractor\Color;
 use JonasKohl\ColorExtractor\Palette;
-use Statamic\Imaging\GlideServer;
 use Statamic\Contracts\Assets\Asset;
 use Statamic\Contracts\Assets\AssetRepository;
 use Statamic\Facades\Asset as AssetFacade;
@@ -41,12 +40,8 @@ trait BlurHashStringTrait
      */
     protected function getColor($path)
     {
-        // get the filesystems path prefix
-        $pathPrefix = app(GlideServer::class)->cachePath();
-        // assemble the full path to the image
-        $fullPath = $pathPrefix.'/'.$path->getPath();
         // create palette and return the dominant color
-        $palette = Palette::fromFileName($fullPath);
+        $palette = Palette::fromFileName($path);
         $topFive = $palette->getMostUsedColors(5);
         $most_used_color = array_key_first($topFive);
         $most_used_hex = Color::fromIntToHex($most_used_color);
@@ -56,6 +51,50 @@ trait BlurHashStringTrait
         $muted = "#" . implode("", $hsl_value_muted->values());
         return $muted;
     }
+
+	/**
+     * Returns the glide manager.
+     *
+     * @return \Statamic\Imaging\GlideManager | \Statamic\Imaging\GlideServer
+     */
+    private function getGlideManager()
+	{
+    	return class_exists("\Statamic\Imaging\GlideManager") ? app("\Statamic\Imaging\GlideManager") : app("\Statamic\Imaging\GlideServer");
+	}
+
+    /**
+     * Returns the glide server.
+     *
+     * @return \League\Glide\Server
+     */
+    private function getGlideServer()
+	{
+		$manager = $this->getGlideManager();
+    	return $manager instanceof \Statamic\Imaging\GlideManager ? $manager->server() : $manager->create();
+	}
+
+    /**
+     * Returns the glide cache path.
+     *
+     * @return string
+     */
+    private function getCachePath($path)
+	{
+		$manager = $this->getGlideManager();
+		$server = $this->getGlideServer();
+
+		// Statamic 3.3+
+		if ($manager instanceof \Statamic\Imaging\GlideManager) {
+			$storage = $this->getGlideManager()->cacheDisk();
+			return $storage->path($path);
+		} else {
+			// Get the filesystems path prefix
+			$pathPrefix = $manager->cachePath();
+			// Assemble the full path to the image
+			$fullPath = $pathPrefix.'/'.$server->getCache()->get($path)->getPath();
+			return $fullPath;
+		}
+	}
 
     /**
      * Generate BlurHash string for one asset
@@ -68,7 +107,6 @@ trait BlurHashStringTrait
         $blurhashFromMeta = $assetFromFacade->get("blurhash");
         $dominantColorFromMeta = $assetFromFacade->get("dominant_color");
         $imageGenerator = app(ImageGenerator::class);
-        $server = app(GlideServer::class)->create();
 
         // generate a small version of the image, to make blurhashes life easier and to support files on s3
         $path = $imageGenerator->generateByAsset($asset, [
@@ -76,13 +114,12 @@ trait BlurHashStringTrait
         ]);
 
         if (!$blurhashFromMeta) {
-            $hash = BlurHash::encode($server->getCache()->read($path));
+            $hash = BlurHash::encode($this->getGlideServer()->getCache()->read($path));
             $asset->set("blurhash", $hash);
         }
 
         if (!$dominantColorFromMeta) {
-            $color = $this->getColor($server->getCache()->get($path));
-            $asset->set("dominant_color", $color);
+            $asset->set("dominant_color", $this->getColor($this->getCachePath($path)));
         }
 
 		$asset->save(); // Save the meta data and clear the cache
