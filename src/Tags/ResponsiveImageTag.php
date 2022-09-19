@@ -218,16 +218,8 @@ class ResponsiveImageTag extends Tags
 		} else if ($this->src instanceof Asset) {
 			$asset = $this->src;
 		} else if ($this->src instanceof Value) {
-			$raw = $this->src->raw();
-			if (is_array($raw)) {
-				$raw = $raw['src'];
-			}
-			$asset = Cache::rememberForever('image_' . $raw, function () {
-				$tmp = $this->src->value();
-				if (is_array($tmp)) {
-					$asset = $asset["src"]->value();
-				}
-				return $tmp;
+			$asset = Cache::rememberForever('image_' . $this->src->raw(), function () {
+				return AssetFacade::findByUrl($this->src);
 			});
 		} else {
 			$asset = $this->src;
