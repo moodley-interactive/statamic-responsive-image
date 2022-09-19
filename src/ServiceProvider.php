@@ -3,8 +3,10 @@
 namespace Mia\ImageRenderer;
 
 use Mia\ImageRenderer\Commands\GenerateBlurhashStrings;
+use Mia\ImageRenderer\Listeners\SaveAssetListener;
 use Mia\ImageRenderer\Listeners\UploadAssetListener;
 use Mia\ImageRenderer\Tags\ResponsiveImageTag;
+use Statamic\Events\AssetSaved;
 use Statamic\Events\AssetUploaded;
 use Statamic\Providers\AddonServiceProvider;
 
@@ -35,6 +37,9 @@ class ServiceProvider extends AddonServiceProvider
     protected $listen = [
         AssetUploaded::class => [
             UploadAssetListener::class,
+        ],
+        AssetSaved::class => [
+            SaveAssetListener::class,
         ],
     ];
 }
