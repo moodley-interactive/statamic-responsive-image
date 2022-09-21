@@ -40,4 +40,18 @@ return [
         'container_padding' => 40,
         'columns' => 12,
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Image color placeholder
+    |--------------------------------------------------------------------------
+	|
+    */
+
+	/**
+	 * A value in percent that allows to mute the most dominant color.
+	 * Applying a change of this value to all existing images requires
+	 * regenerating the placeholders using the `php please resp:generate` command.
+	 */
+    'background_color_mute_percent' => 66,
 ];

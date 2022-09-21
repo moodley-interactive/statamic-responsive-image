@@ -47,7 +47,7 @@ trait BlurHashStringTrait
         $most_used_hex = Color::fromIntToHex($most_used_color);
         $color = new hex($most_used_hex);
         $white = new Hex('#fff');
-        $hsl_value_muted = $color->mix($white, 66);
+        $hsl_value_muted = $color->mix($white, config('statamic-image-renderer.background_color_mute_percent'));
         $muted = "#" . implode("", $hsl_value_muted->values());
         return $muted;
     }
