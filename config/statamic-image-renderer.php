@@ -16,11 +16,12 @@ return [
         'xl' => 1280,
         '2xl' => 1536,
     ],
+
     /*
     |--------------------------------------------------------------------------
     | Provider
     |--------------------------------------------------------------------------
-    | can currently be
+    | Can currently be
     | imgix, glide
     |
     */
@@ -43,15 +44,21 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Image color placeholder
+    | Image
     |--------------------------------------------------------------------------
-	|
+    |
     */
 
-	/**
-	 * A value in percent that allows to mute the most dominant color.
-	 * Applying a change of this value to all existing images requires
-	 * regenerating the placeholders using the `php please resp:generate` command.
-	 */
+    /**
+     * A value in percent that allows to mute the most dominant color.
+     * Applying a change of this value to all existing images requires
+     * regenerating the placeholders using the `php please resp:generate` command.
+     */
     'background_color_mute_percent' => 66,
+
+    /**
+     * Defines how lazy-loading should be handled.
+     * Can be "browser" (browser-level lazy-loading) or "lazysizes".
+     */
+    'lazy_loading' => 'lazysizes',
 ];

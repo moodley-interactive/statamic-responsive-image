@@ -12,7 +12,7 @@
 - Supports aspect ratios
 - Works with your existing assets, no custom fieldtype needed
 - Displays a single color placeholder (muted dominant color) of the image
-- Uses [lazySizes](https://github.com/aFarkas/lazysizes) 
+- Supports [lazySizes](https://github.com/aFarkas/lazysizes)
 
 ## Motivation
 
@@ -26,12 +26,9 @@ Install via composer:
 Publish the config:
 `php artisan vendor:publish --tag="statamic-image-renderer-config"`
 
-Add [lazysizes](https://github.com/aFarkas/lazysizes) to your sites js:
+If you want to use the native browser-level lazy-loading, set `lazy_loading` to `browser` inside the config.
 
-```
-yarn add lazysizes
-```
-or
+When using [lazysizes](https://github.com/aFarkas/lazysizes) add it to your site like this:
 ```
 npm install lazysizes
 ```
