@@ -234,7 +234,7 @@ class ResponsiveImageTag extends Tags
 		$srcsets = $this->breakpoints($asset, $ratio, $asset->extension());
 		$reversed_srcsets = array_reverse($srcsets);
 		$dominant_color = isset($meta_data["dominant_color"]) ? $meta_data["dominant_color"] : '#f1f1f1';
-		$lazyload = $this->params->get('lazyload') ? $this->params->get('lazyload') : 'lazy';
+		$lazyload = $this->params->get('lazyload', 'lazy');
 
 		return view('statamic-image-renderer::responsiveImage', [
 			//   "blurhash" => isset($meta_data["blurhash"]) ? $meta_data["blurhash"] : '',
