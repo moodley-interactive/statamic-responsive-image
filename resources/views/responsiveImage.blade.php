@@ -7,7 +7,7 @@ $use_lazysizes = config("statamic-image-renderer.lazy_loading", "lazysizes") ===
 		<source
 			sizes="{{ $srcset["sizes"] }}"
 			@if (!$loop->last) media="(min-width: {{ $srcset["min_width"] }}px)"@endif
-			@if ($use_lazysizes)
+			@if ($use_lazysizes && $lazyload == 'lazy')
 			data-srcset="{{ $srcset["srcset"] }}"
 			@else
 			srcset="{{ $srcset["srcset"] }}"
@@ -15,15 +15,15 @@ $use_lazysizes = config("statamic-image-renderer.lazy_loading", "lazysizes") ===
 		/>
 	@endforeach
 	<img
-		onload="this.style.backgroundColor='transparent';@if(!$use_lazysizes)this.classList.remove('lazyload');this.classList.add('lazyloaded')@endif"
-		loading="lazy"
+		onload="this.style.backgroundColor='transparent';@if(!$use_lazysizes && $lazyload == 'lazy')this.classList.remove('lazyload');this.classList.add('lazyloaded')@endif"
+		loading="{{$lazyload}}"
 		height="{{ $height }}"
 		width="{{ $width }}"
     	src="{{ $placeholder }}"
-		@if ($use_lazysizes)
+		@if ($use_lazysizes && $lazyload == 'lazy')
     	data-src="{{ $placeholder }}"
 		@endif
-		class="lazyload {{ $class }}"
+		class="{{$lazyload == 'lazy' ? 'lazyload' : ''}} {{ $class }}"
 		style="background-color: {{ $dominant_color }};"
     	alt="{{ $alt }}"
     />
