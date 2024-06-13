@@ -114,7 +114,7 @@ trait BlurHashStringTrait
         ]);
 
         if (!$blurhashFromMeta) {
-            $hash = BlurHash::encode($this->getGlideServer()->getCache()->read($path));
+            $hash = BlurHash::encode($this->getCachePath($path));
             $asset->set("blurhash", $hash);
         }
 
