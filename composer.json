@@ -32,7 +32,7 @@
 		}
 	},
 	"require": {
-		"bepsvpt/blurhash": "^3.0",
+		"bepsvpt/blurhash": "^4.0",
 		"jonaskohl/color-extractor": "^0.4",
 		"ozdemirburak/iris": "^2.3"
 	},

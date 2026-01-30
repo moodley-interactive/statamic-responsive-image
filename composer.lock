@@ -4,34 +4,34 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "fe6f7abf475aba4a95238a5f895546c9",
+    "content-hash": "809b483f3969f98506ee00073b609040",
     "packages": [
         {
             "name": "bepsvpt/blurhash",
-            "version": "3.0.1",
+            "version": "4.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bepsvpt/blurhash.git",
-                "reference": "dc58974c2543998e09cdf246566165727123a140"
+                "reference": "cfc1d67898324e3ed73712bc3f289ebe06e26522"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bepsvpt/blurhash/zipball/dc58974c2543998e09cdf246566165727123a140",
-                "reference": "dc58974c2543998e09cdf246566165727123a140",
+                "url": "https://api.github.com/repos/bepsvpt/blurhash/zipball/cfc1d67898324e3ed73712bc3f289ebe06e26522",
+                "reference": "cfc1d67898324e3ed73712bc3f289ebe06e26522",
                 "shasum": ""
             },
             "require": {
                 "ext-exif": "*",
-                "illuminate/support": "^8.0 || ^9.0 || ^10.0 || ^11.0",
+                "illuminate/support": "^8.0 || ^9.0 || ^10.0 || ^11.0 || ^12.0",
                 "php": "^8.0"
             },
             "require-dev": {
-                "ergebnis/composer-normalize": "^2.42",
-                "jcupitt/vips": "^2.3",
-                "larastan/larastan": "^2.9",
-                "laravel/pint": "^1.14",
-                "orchestra/testbench": "^6.43 || ^7.41 || ^8.22 || ^9.0",
-                "phpunit/phpunit": "^9.6"
+                "ergebnis/composer-normalize": "^2.45",
+                "jcupitt/vips": "^2.4",
+                "larastan/larastan": "^3.2",
+                "laravel/pint": "^1.21",
+                "orchestra/testbench": "^6.47 || ^7.53 || ^8.34 || ^9.12 || ^10.1",
+                "phpunit/phpunit": "^9.6 || ^10.5 || ^11.5 || ^12.0"
             },
             "suggest": {
                 "ext-ffi": "Required to use php-vips driver.",
@@ -73,9 +73,9 @@
             ],
             "support": {
                 "issues": "https://github.com/bepsvpt/blurhash/issues",
-                "source": "https://github.com/bepsvpt/blurhash/tree/3.0.1"
+                "source": "https://github.com/bepsvpt/blurhash/tree/4.0.1"
             },
-            "time": "2024-03-27T00:15:44+00:00"
+            "time": "2025-07-02T01:10:38+00:00"
         },
         {
             "name": "carbonphp/carbon-doctrine-types",
@@ -4114,10 +4114,10 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {},
     "prefer-stable": false,
     "prefer-lowest": false,
-    "platform": [],
-    "platform-dev": [],
+    "platform": {},
+    "platform-dev": {},
     "plugin-api-version": "2.6.0"
 }
